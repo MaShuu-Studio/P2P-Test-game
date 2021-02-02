@@ -6,11 +6,22 @@ using Mirror;
 public class Character : NetworkBehaviour
 {
     [SerializeField] private float speed;
-    private Rigidbody rigidbody;
+    [SerializeField] private float jump_speed;
+    [SerializeField] private float jump_max_amount;
+    private Rigidbody rigidbody3d;
+    private GameController gameController;
+    private Renderer renderer;
+    private bool isJump = false;
+    private float jump = 0;
+    private float jump_amount = 0;
     
     void Start()
     {
-        rigidbody = GetComponent<Rigidbody>();
+        rigidbody3d = GetComponent<Rigidbody>();
+        renderer = GetComponent<MeshRenderer>();
+        //gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
+        //renderer.materials[0] = gameController.SetColor();
+        Debug.Log(NetworkClient.connection.connectionId);
     }
     
     // Update is called once per frame
@@ -20,9 +31,22 @@ public class Character : NetworkBehaviour
         {
             float moveX = Input.GetAxis("Horizontal");
             float moveZ = Input.GetAxis("Vertical");
-            float jump = 0;
-            if (Input.GetButtonDown("Jump") && rigidbody.velocity.y == 0) jump = 30;
-            rigidbody.velocity = new Vector3(speed * moveX, jump, speed * moveZ);
+            if (Input.GetButtonDown("Jump") && isJump == false)
+            {
+                isJump = true;
+                jump = jump_speed;
+            }
+            transform.position += new Vector3(speed * moveX, jump, speed * moveZ);
+            if (isJump)
+            {
+                jump_amount += jump;
+                if (jump_amount >= jump_max_amount) jump = 0;
+                if (transform.position.y <= 0.001f) 
+                {
+                    jump_amount = 0;
+                    isJump = false;
+                }
+            }
         }
     }
 }
