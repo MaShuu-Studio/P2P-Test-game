@@ -8,26 +8,27 @@ public class Character : NetworkBehaviour
     [SerializeField] private float speed;
     [SerializeField] private float jump_speed;
     [SerializeField] private float jump_max_amount;
-    private Rigidbody rigidbody3d;
+    private Rigidbody _rigidbody;
     private GameController gameController;
-    private Renderer renderer;
+    private MeshRenderer _renderer;
+    [SyncVar] private Color _color;
     private bool isJump = false;
     private float jump = 0;
     private float jump_amount = 0;
     
-    void Start()
+    void Awake()
     {
-        rigidbody3d = GetComponent<Rigidbody>();
-        renderer = GetComponent<MeshRenderer>();
-        //gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
-        //renderer.materials[0] = gameController.SetColor();
-        Debug.Log(NetworkClient.connection.connectionId);
+        _rigidbody = GetComponent<Rigidbody>();
+        _renderer = GetComponent<MeshRenderer>();
+        _color = _renderer.materials[0].color;
     }
     
     // Update is called once per frame
     void Update()
     {
-        if(this.isLocalPlayer)
+        if (_renderer.materials[0].color != _color)            
+            _renderer.materials[0].color = _color;
+        if (this.isLocalPlayer)
         {
             float moveX = Input.GetAxis("Horizontal");
             float moveZ = Input.GetAxis("Vertical");
@@ -48,5 +49,10 @@ public class Character : NetworkBehaviour
                 }
             }
         }
+    }
+
+    public void SetColor(Color color)
+    {
+        _color = color;
     }
 }

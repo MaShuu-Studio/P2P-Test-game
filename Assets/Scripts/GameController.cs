@@ -7,53 +7,39 @@ public class GameController : NetworkBehaviour
 {
     [SerializeField] List<Material> mats;
     [SerializeField] GameObject charac;
-    private List<int> clients;
-    private List<bool> mat_Indexes;
+    private List<int> mat_clients;
 
     private int cons = 0;
 
     void Start()
     {
-        mat_Indexes = new List<bool>();
-        clients = new List<int>();
+        mat_clients = new List<int>();
 
         for(int i = 0; i < mats.Count; i++)
-        {
-            mat_Indexes.Add(false);
-        }
-
-        for(int i = 0; i < clients.Count; i++)
-        {
-            clients.Add(-1);
-        }
+            mat_clients.Add(-1);
     }
 
-    void Update()
-    {
-        
-    }
-    
-    public Material SetColor()
+    public Color GetColor(int id)
     {
         for(int i = 0; i < mats.Count; i++)
         {
-            if (mat_Indexes[i] == false)
+            if (mat_clients[i] == -1)
             {
-                mat_Indexes[i] = true;
-                return mats[i];
+                mat_clients[i] = id;
+                return mats[i].color;
             }
         }
 
-        return null;
+        return new Color(255,0,0);
     }
 
-    public void RemoveColor(Material mat)
+    public void RemoveColor(int id)
     {
-        for(int i = 0; i < mats.Count; i++)
+        for(int i = 0; i < mat_clients.Count; i++)
         {
-            if (mats[i] == mat)
+            if (mat_clients[i] == id)
             {
-                mat_Indexes[i] = false;
+                mat_clients[i] = -1;
                 break;
             }
         }
